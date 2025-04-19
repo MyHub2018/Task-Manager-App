@@ -5,10 +5,19 @@ function TaskCard({ task, onDelete }) {
   const navigate = useNavigate();
 
   const handleDelete = () => {
-    fetch(`/api/tasks/${task.id}`, {
+    fetch(`http://localhost:5000/tasks/${task.id}`, {
       method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
     })
-      .then(() => onDelete(task.id))
+      .then((response) => {
+        if (response.ok) {
+          onDelete(task.id);
+        } else {
+          console.error('Failed to delete task.');
+        }
+      })
       .catch((error) => console.error('Error deleting task:', error));
   };
 

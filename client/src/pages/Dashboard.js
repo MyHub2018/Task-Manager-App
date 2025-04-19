@@ -21,6 +21,17 @@ function Dashboard() {
     fetchTasks();
   }, []);
 
+  const handleDelete = async (taskId) => {
+    try {
+      await axios.delete(`http://localhost:5000/tasks/${taskId}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
+    } catch (err) {
+      console.error("Failed to delete task.");
+    }
+  };
+
   return (
     <div className="dashboard">
       <div className="dashboard-header">
@@ -29,7 +40,7 @@ function Dashboard() {
       </div>
       <div className="task-grid">
         {tasks.map((task) => (
-          <TaskCard key={task.id} task={task} />
+          <TaskCard key={task.id} task={task} onDelete={handleDelete} />
         ))}
       </div>
     </div>
