@@ -1,30 +1,54 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 
 const TaskForm = () => {
+  const { id } = useParams();
   const [task, setTask] = useState({
-    title: '',
-    description: '',
-    dueDate: ''
+    title: "",
+    description: "",
+    dueDate: "",
   });
+
+  useEffect(() => {
+    if (id) {
+      // Fetch existing task data for editing
+      axios
+        .get(`/tasks/${id}`)
+        .then((response) => {
+          setTask({
+            title: response.data.title,
+            description: response.data.description,
+            dueDate: response.data.due_date,
+          });
+        })
+        .catch((error) => console.error("Error fetching task:", error));
+    }
+  }, [id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setTask({
       ...task,
-      [name]: value
+      [name]: value,
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('/tasks', task);
-      console.log('Task created:', response.data);
-      // Handle success (e.g., reset form, display message)
+      if (id) {
+        // Update existing task
+        await axios.put(`/tasks/${id}`, task);
+        console.log("Task updated:", task);
+      } else {
+        // Create new task
+        await axios.post("/tasks", task);
+        console.log("Task created:", task);
+      }
+      // Redirect or update UI as needed
     } catch (error) {
-      console.error('There was an error creating the task!', error);
-      // Handle error (e.g., display error message)
+      console.error("Error saving task:", error);
     }
   };
 
@@ -51,7 +75,7 @@ const TaskForm = () => {
         onChange={handleChange}
         required
       />
-      <button type="submit">Create Task</button>
+      <button type="submit">{id ? "Update Task" : "Create Task"}</button>
     </form>
   );
 };

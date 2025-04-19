@@ -1,12 +1,12 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
 function TaskCard({ task, onDelete }) {
   const navigate = useNavigate();
 
   const handleDelete = () => {
     fetch(`http://localhost:5000/tasks/${task.id}`, {
-      method: 'DELETE',
+      method: "DELETE",
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
@@ -15,10 +15,10 @@ function TaskCard({ task, onDelete }) {
         if (response.ok) {
           onDelete(task.id);
         } else {
-          console.error('Failed to delete task.');
+          console.error("Failed to delete task.");
         }
       })
-      .catch((error) => console.error('Error deleting task:', error));
+      .catch((error) => console.error("Error deleting task:", error));
   };
 
   return (
